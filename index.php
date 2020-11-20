@@ -12,6 +12,8 @@ $cfg_NotPrintHead = "Y";
 require_once (dirname(__FILE__) . "/../include/common.inc.php");
 require_once (dirname(__FILE__) . "/common.func.php");
 
+define("TOV6LOCK", DEDEDATA."/cache/tov6.lock.txt");
+
 $bkdir = DEDEDATA.'/'.$cfg_backup_dir."/tov6";
 MkdirAll($bkdir,$GLOBALS['cfg_dir_purview']);
 
@@ -61,8 +63,12 @@ if ( empty($bakfiles) )
 	$bakfiles = implode(",", $filelists);
 }
 
+if (file_exists(TOV6LOCK)) {
+	ShowMsgV6("<p>已经成功执行升级程序，无需重复执行。</p><p>如果您需要获取升级服务，可以<a target='_blank' href='https://www.dedebiz.com/contact#contact'>联系官方</a>协助升级。</p>","javascript:;");
+}
+
 if ($step == 0) {
-	ShowMsgV6("执行升级程序之前，您需要<font color=red>备份站点数据库及文件</font>，如果已经完成备份，可以点击下面“开始升级到V6”进行升级！<br><a target='_blank' class='btn btn-outline-success' href='https://www.dedebiz.com/help/tov6.md'>升级文档</a> <a class='btn btn-success' href='index.php?step=1'>开始升级到V6</a>","javascript:;");
+	ShowMsgV6("<p>执行升级程序之前，您需要<font color=red>备份站点数据库及文件</font>，如果已经完成备份，可以点击下面“开始升级到V6”进行升级！<br><a target='_blank' class='btn btn-outline-success' href='https://www.dedebiz.com/help/tov6.md'>升级文档</a> <a class='btn btn-success' href='index.php?step=1'>开始升级到V6</a></p><p>如果您需要获取升级服务，也可以<a target='_blank' href='https://www.dedebiz.com/contact#contact'>联系官方</a>协助升级。</p>","javascript:;");
 }
 
 // 对数据库进行编码转换
@@ -410,7 +416,9 @@ else if ( $step == 3 )
 
 	file_put_contents(DEDEDATA."/common.inc.php", $sqlconn);
 
-	rename(dirname(__FILE__)."/index.php",dirname(__FILE__)."/index.php.bak");
+	file_put_contents(TOV6LOCK, "www.dedebiz.com");
+
+	// rename(dirname(__FILE__)."/index.php",dirname(__FILE__)."/index.php.bak");
 	
 	ShowMsgV6('完成系统数据库转换升级，下载DedeCMSV6系统，解压后将<code>./src</code>目录下的文件选择性替换即可完成升级。<br><a class=\'btn btn-success\' target=\'_blank\' href=\'https://www.dedebiz.com/download\'>下载DedeCMSV6</a> ', 'javascript:;');
 	exit();
